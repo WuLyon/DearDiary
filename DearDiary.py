@@ -3,22 +3,30 @@ import logging
 from user import User
 import config
 
-logging.basicConfig(level=logging.INFO)
+# 配置logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s',
+    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-USER_NAME = 'Lyon'
-USER_ID = '0001'
-
-class SelfScore:
+# DearDiary类
+class DearDiary:
 
     def __init__(self):
-        self.user = User(id=USER_ID, name=USER_NAME)
+        # 初始化一个默认用户
+        self.user = User(id=config.USER_ID, name=config.USER_NAME)
 
     def run(self):
+        '''
+        程序运行的主循环
+        '''
         self.welcome()
     
     def welcome(self):
-        print("Welcome to SelfScore!")
+        '''
+        程序启动时的问候语
+        '''
+        print("Welcome to DearDiary, today is a nice day!")
         print('----------------------------')
         print(f"User: {self.user.name}")
         print(f'ID: {self.user.id}')
@@ -26,12 +34,9 @@ class SelfScore:
         print('----------------------------')
 
 def main():
-    selfscore = SelfScore()
+    selfscore = DearDiary()
     selfscore.run()
 
-def test():
-    user_obj = User(USER_ID, USER_NAME)
-    user_obj.test()
 
 if __name__ == "__main__":
     main()
