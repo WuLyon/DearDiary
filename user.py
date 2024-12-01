@@ -1,5 +1,5 @@
 from subject import Subject
-import datetime
+from op_log import OpLog
 import json
 import logging
 import config
@@ -11,42 +11,24 @@ class User:
     def __init__(self, id, name):
         self.id = id
         self.name = name
-        self.subjects = []
         self.score = 0
-        self.days = []
+        self.op_logs = []
         self.data_path = self.get_data_path()   # 获取用户数据储存的路径
         self.load_data()    # 加载用户数据
 
-    def operator(self):
-        today = datetime.date.today()
-        for subject in self.subjects:
-            is_done = input(f'{subject.name}: ')
-            if is_done.lower() == 'y':
-                subject.point += 1
-                
-
-    def add_subject(self, name):
-        '''
-        向subjects列表中添加新的subject对象
-        name: subject的名称
-        '''
-        self.subjects.append(Subject(name))
-        
 
     def new_data(self):
         '''
         初始化一个新用户的初始数据
         '''
-        # 向subjects列表中添加预设的subject
-        for subject in config.DEFAULT_SUBJECT:
-            self.add_subject(subject)
 
         # 初始化数据
+        self.op_logs.append(OpLog())
         data = {
             'user_id': self.id,
             'user_name': self.name,
-            'subjects': self.subjects,
-            'score': 0
+            'op_logs': self.op_logs,
+            'score': self.score
         }
         logger.info(f'Setup a new user data: {data}')
         return data
@@ -61,10 +43,11 @@ class User:
         获取用户数据的储存路径，若路径存在，直接返回；若路径不存在，则新建json文件并初始化数据
         '''
         data_path = config.APP_PATH / 'users' / (self.id + ".json")
+        # 判断是否是新用户，新用户则创建新的json数据文件，否则直接获取json文件的路径
         if not data_path.exists():
             data = self.new_data() # 初始化数据
             with data_path.open('w') as f:
-                json.dump(data, f, default=subject_to_dict, indent=4)    # 将subject对象转化为字典后存入json文件
+                json.dump(data, f, default=oplog_to_dict, indent=4)    # 将subject对象转化为字典后存入json文件
             logger.info(f'Created new data path {data_path}')
         else:
             logger.info(f'Found data path: {data_path}')
@@ -77,14 +60,14 @@ class User:
         data = {
             'user_id': self.id,
             'user_name': self.name,
-            'subjects': self.subjects,
+            'op_logs': self.op_logs,
             'score': self.score
         }
         # 同步新数据到json文件
         logger.info(f'Saving data of user {self.name} {self.id}')
         try:
             with self.data_path.open('w') as f:
-                json.dump(data, f, default=subject_to_dict, indent=4)  # 将subject对象转化为字典后存入json文件
+                json.dump(data, f, default=oplog_to_dict, indent=4)  # 将subject对象转化为字典后存入json文件
         except Exception as e:
             logger.error(f'An unexpected error occurred while writing {self.data_path}: {e}')
 
@@ -96,9 +79,9 @@ class User:
         '''
         try:
             with self.data_path.open('r') as f:
-                data = json.load(f, object_hook=dict_to_subject)    # 将json文件中的subject字典转化为subject对象
+                data = json.load(f, object_hook=dict_to_oplog)    # 将json文件中的subject字典转化为subject对象
             self.name = data['user_name']
-            self.subjects = data['subjects']
+            self.op_logs = data['op_logs']
             self.score = data['score']
             logger.info(f'Get user data successfully!')
             return data
@@ -107,30 +90,25 @@ class User:
         return None 
     
             
-    def show_user_data(self):
+    def __repr__(self):
         '''
         打印用户数据到终端
         '''
-        print(
-           f'user_id: {self.id}\n' + 
-           f'user_name: {self.name}\n' + 
-           f'subjects: {self.subjects}\n' +
-           f'score: {self.score}'
-        )
+        return f'user_id: {self.id}\n' + f'user_name: {self.name}\n' + f'op_logs: {self.op_logs}\n' +f'score: {self.score}'
         
 
 
-def subject_to_dict(obj):
+def oplog_to_dict(obj):
     '''
-    将subject对象转化为字典
+    将OpLog对象转化为字典
     '''
-    if isinstance(obj, Subject):
+    if isinstance(obj, OpLog):
         return obj.to_dict()
     
-def dict_to_subject(obj):
+def dict_to_oplog(obj):
     '''
-    将字典对象转化为subject对象
+    将字典对象转化为oplog对象
     '''
-    if 'subject' in obj and 'point' in obj:
-        return Subject.from_dict(obj)
+    if 'day' in obj and 'subjects' in obj:
+        return OpLog.from_dict(obj)
     return obj

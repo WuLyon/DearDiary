@@ -29,13 +29,12 @@ class DearDiary:
         print("Welcome to DearDiary, today is a nice day!")
         print('----------------------------')
         print(f"User: {self.user.name}")
-        print(f'ID: {self.user.id}')
-        self.user.show_user_data()
         print('----------------------------')
+        print(self.user)
 
 def main():
-    selfscore = DearDiary()
-    selfscore.run()
+    deardiary = DearDiary()
+    deardiary.run()
 
 
 if __name__ == "__main__":
