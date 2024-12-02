@@ -14,7 +14,7 @@ class Subject:
         '''
         subject对象转化为字典
         '''
-        return {'subject': self.name, 'point': self.point}
+        return {'name': self.name, 'point': self.point}
 
     
     @classmethod
@@ -22,4 +22,4 @@ class Subject:
         '''
         将字典对象转化为subject对象
         '''
-        return cls(obj['subject'], obj['point'])
+        return cls(obj['name'], obj['point'])

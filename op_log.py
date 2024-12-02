@@ -11,10 +11,10 @@ class OpLog():
     记录每日得分情况的类
     """
     
-    def __init__(self, day=datetime.date.today(), subjects=[]):
+    def __init__(self, day=datetime.date.today(), subjects=None):
 
         self.day = day
-        self.subjects = subjects
+        self.subjects = subjects if subjects is not None else []
         if not self.subjects:
             self.default_subjects()
         

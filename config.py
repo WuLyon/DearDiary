@@ -21,7 +21,6 @@ LYON_SUBJECT = [
     'Music',
     'Meditation',
     'Nosex',
-    'Sleep'
 ]
 DEFAULT_SUBJECT = [
     'Exercise',

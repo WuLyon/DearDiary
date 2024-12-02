@@ -1,5 +1,6 @@
 from subject import Subject
 from op_log import OpLog
+import datetime
 import json
 import logging
 import config
@@ -15,6 +16,26 @@ class User:
         self.op_logs = []
         self.data_path = self.get_data_path()   # 获取用户数据储存的路径
         self.load_data()    # 加载用户数据
+        self.count = 0  # 临时记录一个函数被调用了多少次
+
+
+    def add_op(self, day=datetime.date.today()):
+        '''
+        添加操作记录
+        '''
+        last_op = self.op_logs[-1]
+
+        if day == last_op.day:
+            for i in range(len(last_op.subjects)):
+                is_done = input(f'Have you did {last_op.subjects[i].name}? (y/n)')
+                if is_done.lower() == 'y':
+                    last_op.subjects[i].point = self.op_logs[-2].subjects[i].point + 1
+            self.update_data()
+        else:
+            new_log = OpLog(day=last_op.day + datetime.timedelta(days=1))
+            self.op_logs.append(new_log)
+            self.add_op()
+
 
 
     def new_data(self):
@@ -94,7 +115,7 @@ class User:
         '''
         打印用户数据到终端
         '''
-        return f'user_id: {self.id}\n' + f'user_name: {self.name}\n' + f'op_logs: {self.op_logs}\n' +f'score: {self.score}'
+        return f'user_id: {self.id}\n' + f'user_name: {self.name}\n' + f'op_logs: {self.op_logs}\n' +f'score: {self.score}\n'
         
 
 
