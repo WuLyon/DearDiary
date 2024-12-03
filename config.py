@@ -1,8 +1,8 @@
 from pathlib import Path
 import logging.config
 
-USER_NAME = 'Lyon'
-USER_ID = '0001'
+USER_NAME = 'Test_user'
+USER_ID = '0000'
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +21,7 @@ LYON_SUBJECT = [
     'Music',
     'Meditation',
     'Nosex',
+    'Sleep'
 ]
 DEFAULT_SUBJECT = [
     'Exercise',

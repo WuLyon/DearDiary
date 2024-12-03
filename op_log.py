@@ -17,11 +17,21 @@ class OpLog():
         self.subjects = subjects if subjects is not None else []
         if not self.subjects:
             self.default_subjects()
+            
+        self.day_point = self.calculate_day_point()
+        
+    
+    def calculate_day_point(self):
+        day_point = 0
+        for subject in self.subjects:
+            day_point += subject.point
+        self.day_point  = day_point
+        return day_point
         
 
     def __repr__(self):
 
-        return f'OpLog(day={self.day}, subjects={self.subjects})'
+        return f'OpLog(day={self.day}, day_point={self.day_point}, subjects={self.subjects})'
         
 
     def add_subject(self, name):
@@ -37,8 +47,10 @@ class OpLog():
         
     def to_dict(self):
         
+        day = self.day.strftime('%Y-%m-%d')
         subject_list = [subject.to_dict() for subject in self.subjects]
-        return {'day': self.day.strftime('%Y-%m-%d'), 'subjects': subject_list}
+        day_point = self.calculate_day_point()
+        return {'day': day, 'day_point': day_point, 'subjects': subject_list}
     
     
     @classmethod

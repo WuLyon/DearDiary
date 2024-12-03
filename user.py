@@ -29,12 +29,24 @@ class User:
             for i in range(len(last_op.subjects)):
                 is_done = input(f'Have you did {last_op.subjects[i].name}? (y/n)')
                 if is_done.lower() == 'y':
-                    last_op.subjects[i].point = self.op_logs[-2].subjects[i].point + 1
+                    if len(self.op_logs) > 1:   # 避免访问不到self.op_logs[-2]
+                        last_op.subjects[i].point = self.op_logs[-2].subjects[i].point + 1
+                    else:   # 当不存在self.op_logs[-2]时，直接+1
+                        last_op.subjects[i].point += 1
+            self.op_logs[-1].calculate_day_point()
             self.update_data()
         else:
             new_log = OpLog(day=last_op.day + datetime.timedelta(days=1))
             self.op_logs.append(new_log)
             self.add_op()
+            
+    def calculate_score(self):
+        '''
+        计算总分
+        '''
+        self.score = 0
+        for op_log in self.op_logs:
+            self.score += op_log.day_point
 
 
 
@@ -78,6 +90,7 @@ class User:
         '''
         更新用户数据
         '''
+        self.calculate_score()
         data = {
             'user_id': self.id,
             'user_name': self.name,
@@ -115,7 +128,8 @@ class User:
         '''
         打印用户数据到终端
         '''
-        return f'user_id: {self.id}\n' + f'user_name: {self.name}\n' + f'op_logs: {self.op_logs}\n' +f'score: {self.score}\n'
+        total_days = len(self.op_logs)
+        return f'user_id: {self.id}\nuser_name: {self.name}\nop_logs: {self.op_logs}\nscore: {self.score}\ntotal_days: {total_days}\n'
         
 
 
@@ -130,6 +144,6 @@ def dict_to_oplog(obj):
     '''
     将字典对象转化为oplog对象
     '''
-    if 'day' in obj and 'subjects' in obj:
+    if 'day' in obj and 'day_point' in obj and 'subjects' in obj:
         return OpLog.from_dict(obj)
     return obj
