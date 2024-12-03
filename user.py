@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class User:
 
-    def __init__(self, id, name):
+    def __init__(self, id=config.USER_ID, name=config.USER_NAME):
         self.id = id
         self.name = name
         self.score = 0

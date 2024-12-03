@@ -16,7 +16,8 @@ class OpLog():
         self.day = day
         self.subjects = subjects if subjects is not None else []
         if not self.subjects:
-            self.default_subjects()
+            # self.default_subjects()
+            self.Lyon_subjects()
             
         self.day_point = self.calculate_day_point()
         
@@ -42,6 +43,10 @@ class OpLog():
     def default_subjects(self):
 
         for subject in config.DEFAULT_SUBJECT:
+            self.add_subject(subject)
+            
+    def Lyon_subjects(self):
+        for subject in config.LYON_SUBJECT:
             self.add_subject(subject)
         
         
